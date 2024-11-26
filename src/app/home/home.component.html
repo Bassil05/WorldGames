@@ -1,0 +1,86 @@
+<div class="main">
+    <div class="header">
+        <div class="header-l">
+            <h1>
+                <span class="bet">Bet</span><span class="will">will</span>
+            </h1>
+            <p>Sports</p>
+            <p>In-Flay</p>
+            <p>Casino</p>
+            <p>Live Casino</p>
+            <p>Virtual Sports</p>
+        </div>
+        <div class="header-r">
+            <p class="join">Join</p>
+            <p class="login">Log in</p>
+        </div>
+    </div>
+    <div style="height: 60px;width: 100%;"></div>
+    <div class="banner">
+        <!-- <img src="/src/app/img/img.png" alt=""> -->
+    </div>
+    <div class="allgames">
+        <div class="top">
+            <div class="top-list">
+                <p style="display: flex;gap: 5px;">
+                    <span style="color: white;">All Games</span><span class="list-number">(3659)</span>
+                </p>
+                <p style="color: white  ;">All Providers \/</p>
+                <div class="search">
+                    <input 
+                      type="text" 
+                      [(ngModel)]="searchTerm" 
+                      (keyup)="onSearch()"
+                      placeholder="Search by title..." 
+                      class="search-input"
+                    />
+                    <i (click)="resetPagination()" class="fa-solid fa-magnifying-glass" ></i>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="bottom-child-y">
+                <i style="font-size: 30px;" class="fa-regular fa-circle-play"></i>
+                <p>Video Slots</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-regular fa-star"></i>
+                <p>Popular Slots</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-regular fa-heart"></i>
+                <p>Fav</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-solid fa-gamepad"></i>
+                <p>New Games</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-solid fa-brain"></i>
+                <p>Table Games</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-brands fa-phoenix-framework"></i>
+                <p>Jackpot Games</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-brands fa-galactic-senate"></i>
+                <p>Video Poker</p>
+            </div>
+            <div class="bottom-child">
+                <i style="font-size: 30px;color: #9b9b9b;" class="fa-regular fa-square-plus"></i>
+                <p>More</p>
+            </div>
+        </div>
+    </div>
+    <div class="slots">
+        <div *ngFor="let data of displayedItems " class="game" >
+            <img [src]="'https://static.inpcdn.com/' + data.cdnUrl" alt="">
+            <p>{{data.title}}</p>
+        </div>
+    </div>
+    <div class="load-more">
+        <button (click)="loadMoreItems()">Show More</button>
+        <p>({{displayedItems.length}} of {{mergedGameTemplates.length}})</p>
+    </div>
+</div>        
