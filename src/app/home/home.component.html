@@ -29,8 +29,11 @@
                     <button (click)="toggleDropdown()">All Providers \/</button>
                     <div class="dropdown-menu" *ngIf="isDropdownOpen">
                         <div class="dropdown-list" *ngFor="let vendor of vendors ">
-                            <p style="color: white;">{{vendor.id}} : {{vendor.name}}</p>
-                            <input type="checkbox">
+                            <input type="checkbox"
+                             [id]="vendor.id"
+                             [checked]="vendor.isChecked"
+                             (change)="onVendorSelectChanged(vendor.id, $event)" >
+                            <p style="color: white;">{{vendor.name}}</p>
                         </div>
                     </div>
                   </div>

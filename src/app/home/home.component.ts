@@ -14,7 +14,7 @@ import { VendorService } from '../service/vendor.service';
 })
 export class HomeComponent implements OnInit {
   apiData: any;
-  vendors: { id: string, name: string }[] = [];
+  vendors: { id: string, name: string, isChecked: boolean}[] = [];
   mergedGameTemplates: any[] = [];
   filteredItems: any[] = [];
   searchTerm: string = '';
@@ -27,8 +27,7 @@ export class HomeComponent implements OnInit {
   constructor(private apiService: ApiService, private vendorService: VendorService) {}
   ngOnInit(): void {
     this.apiData = this.apiService.getData();
-    this.vendors = Object.entries(this.vendorService.getVendors()).map(([id, name]) => ({ id, name }));
-    console.log(this.vendors)
+    this.vendors = Object.entries(this.vendorService.getVendors()).map(([id, name]) => ({ id, name, isChecked: false}));
     const titleMap = Object.fromEntries(
       this.apiData.GameTemplateNameTranslations.map((item: any) => [
         item.GameTemplateId,
@@ -51,7 +50,7 @@ export class HomeComponent implements OnInit {
     this.filteredItems = [...this.mergedGameTemplates];
     this.chunks = this.splitIntoChunks(this.filteredItems, this.chunkSize);
     this.displayedItems = this.chunks[this.currentChunkIndex];
-    // console.log(this.mergedGameTemplates)
+    console.log(this.mergedGameTemplates)
   }
 
   loadMoreItems() {
@@ -75,12 +74,8 @@ export class HomeComponent implements OnInit {
   }
 
   onSearch() {
-    console.log(this.searchTerm)
-    const term = this.searchTerm.toLowerCase();
-    this.filteredItems = this.mergedGameTemplates.filter((item) =>
-      item.title?.toLowerCase().includes(term)
-    );
-    this.resetPagination();
+    console.log(this.searchTerm);
+    this.filterGamesByVendorsAndSearch();
   }
 
   resetPagination() {
@@ -92,7 +87,31 @@ export class HomeComponent implements OnInit {
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
 
-    console.log('true')
+  onVendorSelectChanged(vendorId: string, state: any): void {
+    let isChecked = state.target.checked;
+    let sv = this.vendors.find(item => item.id === vendorId);
+    if(sv) {
+      sv.isChecked = isChecked;
+    }
+    this.filterGamesByVendorsAndSearch();
+  }
+
+  filterGamesByVendorsAndSearch() {
+    let selectedVendorsIds: Number[] = this.vendors.filter(item => item.isChecked)
+        .map(item => Number(item.id));
+    const term = this.searchTerm.toLowerCase();
+    this.filteredItems = this.mergedGameTemplates;
+
+    if (selectedVendorsIds.length > 0) {
+      this.filteredItems = this.filteredItems.filter( item => selectedVendorsIds.includes(item.GameVendorId));
+    }
+    
+    if (term.length > 0) {
+      this.filteredItems = this.filteredItems.filter( item => item.title?.toLowerCase().includes(term));
+    }
+
+    this.resetPagination();
   }
 }
