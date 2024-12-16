@@ -2,6 +2,7 @@ import { Component, OnInit, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ApiService } from '../service/api.service';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
+import { VendorService } from '../service/vendor.service';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class HomeComponent implements OnInit {
   apiData: any;
+  vendors: { id: string, name: string }[] = [];
   mergedGameTemplates: any[] = [];
   filteredItems: any[] = [];
   searchTerm: string = '';
@@ -22,11 +24,11 @@ export class HomeComponent implements OnInit {
   currentChunkIndex = 0;
   displayedItems: any[] = [];
 
-  constructor(private apiService: ApiService) {}
-
+  constructor(private apiService: ApiService, private vendorService: VendorService) {}
   ngOnInit(): void {
     this.apiData = this.apiService.getData();
-
+    this.vendors = Object.entries(this.vendorService.getVendors()).map(([id, name]) => ({ id, name }));
+    console.log(this.vendors)
     const titleMap = Object.fromEntries(
       this.apiData.GameTemplateNameTranslations.map((item: any) => [
         item.GameTemplateId,
@@ -49,6 +51,7 @@ export class HomeComponent implements OnInit {
     this.filteredItems = [...this.mergedGameTemplates];
     this.chunks = this.splitIntoChunks(this.filteredItems, this.chunkSize);
     this.displayedItems = this.chunks[this.currentChunkIndex];
+    // console.log(this.mergedGameTemplates)
   }
 
   loadMoreItems() {
@@ -84,5 +87,12 @@ export class HomeComponent implements OnInit {
     this.currentChunkIndex = 0;
     this.chunks = this.splitIntoChunks(this.filteredItems, this.chunkSize);
     this.displayedItems = this.chunks[this.currentChunkIndex] || [];
+  }
+  isDropdownOpen: boolean = false;
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+
+    console.log('true')
   }
 }

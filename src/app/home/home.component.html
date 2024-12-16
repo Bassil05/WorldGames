@@ -17,7 +17,7 @@
     </div>
     <div style="height: 60px;width: 100%;"></div>
     <div class="banner">
-        <!-- <img src="/src/app/img/img.png" alt=""> -->
+        <img src="./img/img.png" alt="">
     </div>
     <div class="allgames">
         <div class="top">
@@ -25,7 +25,15 @@
                 <p style="display: flex;gap: 5px;">
                     <span style="color: white;">All Games</span><span class="list-number">(3659)</span>
                 </p>
-                <p style="color: white  ;">All Providers \/</p>
+                <div class="dropdown">
+                    <button (click)="toggleDropdown()">All Providers \/</button>
+                    <div class="dropdown-menu" *ngIf="isDropdownOpen">
+                        <div class="dropdown-list" *ngFor="let vendor of vendors ">
+                            <p style="color: white;">{{vendor.id}} : {{vendor.name}}</p>
+                            <input type="checkbox">
+                        </div>
+                    </div>
+                  </div>
                 <div class="search">
                     <input 
                       type="text" 

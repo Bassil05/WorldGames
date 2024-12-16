@@ -61,6 +61,10 @@
     margin: 0 auto;
     margin-top: 20px;
 }
+.banner img{
+    width: 100%;
+    height: 100%;
+}
 .allgames{
     width: 1271px;
     height: 211px;
@@ -79,6 +83,44 @@
     justify-content: space-evenly;
     width: 50%;
     height: 100%;
+}
+.dropdown button{
+    border: none;
+    color: white;
+    background: transparent;
+    font-size: 14px;
+}
+.dropdown {
+    position: relative;
+    width: 200px; 
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    padding-left: 10px;
+    padding-top: 5px;
+    max-width: 200px;
+    max-height: 100px; 
+    overflow-y: auto;
+    overflow-x: hidden; 
+    border: 1px solid #ccc;
+    background-color: #494949;
+    z-index: 1;
+}
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+.dropdown-list{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.dropdown-list input{
+    width: 15px;
+    height: 15px;
 }
 .list-number{
     color: yellow;
