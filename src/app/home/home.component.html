@@ -29,23 +29,16 @@
                     <button (click)="toggleDropdown()">All Providers \/</button>
                     <div class="dropdown-menu" *ngIf="isDropdownOpen">
                         <div class="dropdown-list" *ngFor="let vendor of vendors ">
-                            <input type="checkbox"
-                             [id]="vendor.id"
-                             [checked]="vendor.isChecked"
-                             (change)="onVendorSelectChanged(vendor.id, $event)" >
+                            <input type="checkbox" [id]="vendor.id" [checked]="vendor.isChecked"
+                                (change)="onVendorSelectChanged(vendor)">
                             <p style="color: white;">{{vendor.name}}</p>
                         </div>
                     </div>
-                  </div>
+                </div>
                 <div class="search">
-                    <input 
-                      type="text" 
-                      [(ngModel)]="searchTerm" 
-                      (keyup)="onSearch()"
-                      placeholder="Search by title..." 
-                      class="search-input"
-                    />
-                    <i (click)="resetPagination()" class="fa-solid fa-magnifying-glass" ></i>
+                    <input type="text" [(ngModel)]="searchTerm" (keyup)="onSearch()" placeholder="Search by title..."
+                        class="search-input" />
+                    <i (click)="resetPagination()" class="fa-solid fa-magnifying-glass"></i>
                 </div>
             </div>
         </div>
@@ -85,13 +78,13 @@
         </div>
     </div>
     <div class="slots">
-        <div *ngFor="let data of displayedItems " class="game" >
+        <div *ngFor="let data of displayedItems " class="game">
             <img [src]="'https://static.inpcdn.com/' + data.cdnUrl" alt="">
             <p>{{data.title}}</p>
         </div>
     </div>
-    <div class="load-more">
+    <div class="load-more" *ngIf="loadMoreAvailable">
         <button (click)="loadMoreItems()">Show More</button>
-        <p>({{displayedItems.length}} of {{mergedGameTemplates.length}})</p>
+        <p>({{displayedItems.length}} of {{filteredItems.length}})</p>
     </div>
-</div>        
+</div>

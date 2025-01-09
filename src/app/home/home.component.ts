@@ -1,12 +1,12 @@
 import { Component, OnInit, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ApiService } from '../service/api.service';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VendorService } from '../service/vendor.service';
 
 @Component({
   selector: 'app-home',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './home.component.html',
   schemas: [NO_ERRORS_SCHEMA],
@@ -14,20 +14,20 @@ import { VendorService } from '../service/vendor.service';
 })
 export class HomeComponent implements OnInit {
   apiData: any;
-  vendors: { id: string, name: string, isChecked: boolean}[] = [];
+  vendors: { id: string, name: string, isChecked: boolean }[] = [];
   mergedGameTemplates: any[] = [];
   filteredItems: any[] = [];
   searchTerm: string = '';
+  loadMoreAvailable: boolean = true;
 
   chunkSize: number = 60;
-  chunks: any[] = [];
   currentChunkIndex = 0;
   displayedItems: any[] = [];
 
-  constructor(private apiService: ApiService, private vendorService: VendorService) {}
+  constructor(private apiService: ApiService, private vendorService: VendorService) { }
   ngOnInit(): void {
     this.apiData = this.apiService.getData();
-    this.vendors = Object.entries(this.vendorService.getVendors()).map(([id, name]) => ({ id, name, isChecked: false}));
+    this.vendors = Object.entries(this.vendorService.getVendors()).map(([id, name]) => ({ id, name, isChecked: false }));
     const titleMap = Object.fromEntries(
       this.apiData.GameTemplateNameTranslations.map((item: any) => [
         item.GameTemplateId,
@@ -48,29 +48,26 @@ export class HomeComponent implements OnInit {
     })).sort((a: any, b: any) => a.DefaultOrdering - b.DefaultOrdering);
 
     this.filteredItems = [...this.mergedGameTemplates];
-    this.chunks = this.splitIntoChunks(this.filteredItems, this.chunkSize);
-    this.displayedItems = this.chunks[this.currentChunkIndex];
+    this.setDisplayedItems()
     console.log(this.mergedGameTemplates)
   }
 
+  setLoadMoreAvailable() {
+    this.loadMoreAvailable = (this.currentChunkIndex + 1) * this.chunkSize < this.filteredItems.length
+  }
   loadMoreItems() {
-    this.currentChunkIndex++;
-    if (this.currentChunkIndex < this.chunks.length) {
-      this.displayedItems = [
-        ...this.displayedItems,
-        ...this.chunks[this.currentChunkIndex],
-      ];
-    } else {
+    if (this.loadMoreAvailable) {
+      this.currentChunkIndex++
+      this.setDisplayedItems()
+    }
+    else {
       console.log('No more items to load.');
     }
   }
 
-  splitIntoChunks(array: any[], chunkSize: number) {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
+  setDisplayedItems() {
+    this.displayedItems = this.filteredItems.slice(0, (this.currentChunkIndex + 1) * this.chunkSize);
+    this.setLoadMoreAvailable()
   }
 
   onSearch() {
@@ -80,8 +77,7 @@ export class HomeComponent implements OnInit {
 
   resetPagination() {
     this.currentChunkIndex = 0;
-    this.chunks = this.splitIntoChunks(this.filteredItems, this.chunkSize);
-    this.displayedItems = this.chunks[this.currentChunkIndex] || [];
+    this.setDisplayedItems()
   }
   isDropdownOpen: boolean = false;
 
@@ -89,27 +85,23 @@ export class HomeComponent implements OnInit {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
-  onVendorSelectChanged(vendorId: string, state: any): void {
-    let isChecked = state.target.checked;
-    let sv = this.vendors.find(item => item.id === vendorId);
-    if(sv) {
-      sv.isChecked = isChecked;
-    }
+  onVendorSelectChanged(vendor: any): void {
+    vendor.isChecked = !vendor.isChecked;
     this.filterGamesByVendorsAndSearch();
   }
 
   filterGamesByVendorsAndSearch() {
     let selectedVendorsIds: Number[] = this.vendors.filter(item => item.isChecked)
-        .map(item => Number(item.id));
+      .map(item => Number(item.id));
     const term = this.searchTerm.toLowerCase();
     this.filteredItems = this.mergedGameTemplates;
 
     if (selectedVendorsIds.length > 0) {
-      this.filteredItems = this.filteredItems.filter( item => selectedVendorsIds.includes(item.GameVendorId));
+      this.filteredItems = this.filteredItems.filter(item => selectedVendorsIds.includes(item.GameVendorId));
     }
-    
+
     if (term.length > 0) {
-      this.filteredItems = this.filteredItems.filter( item => item.title?.toLowerCase().includes(term));
+      this.filteredItems = this.filteredItems.filter(item => item.title?.toLowerCase().includes(term));
     }
 
     this.resetPagination();
